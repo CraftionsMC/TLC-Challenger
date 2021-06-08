@@ -28,6 +28,19 @@ public final class ChallengerPlugin extends JavaPlugin {
         initDatabase();
     }
 
+    @Override
+    public void onDisable() {
+        if (DATABASE_CONNECTION != null) {
+            try {
+                System.out.println("Closing database connection...");
+                DATABASE_CONNECTION.close();
+            } catch (SQLException throwables) {
+                System.out.println("There was an error closing the connection!");
+                throwables.printStackTrace();
+            }
+        }
+    }
+
     private void initConfig() {
         ConfigFileManager.setup();
         BufferedReader reader = null;
@@ -52,6 +65,13 @@ public final class ChallengerPlugin extends JavaPlugin {
     }
 
     private void initDatabase() {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Couldn't find PostgreSQL driver! Disabling...");
+            e.printStackTrace();
+            Bukkit.getPluginManager().disablePlugin(INSTANCE);
+        }
         String jdbcURL = "jdbc:postgresql://" + ConfigFileManager.get().getString("postgres.host") + ":" +
                 ConfigFileManager.get().getString("postgres.port") + "/" +
                 ConfigFileManager.get().getString("postgres.database");
