@@ -23,9 +23,21 @@ public class DatabaseTable {
     public static boolean add(DatabaseTableType databaseTableType, UUID uuid, String row, int addition) {
         try {
             Statement statement = ChallengerPlugin.DATABASE_CONNECTION.createStatement();
-            statement.execute("UPDATE " + databaseTableType.getDatabaseTableName() + " SET " + row + " = " + row + " + " + addition + " WHERE uuid = " + uuid);
+            statement.execute("UPDATE " + databaseTableType.getDatabaseTableName() + " SET " + row + " = " + row + " + " + addition + " WHERE uuid = '" + uuid + "'");
             statement.close();
             return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean reset(DatabaseTableType databaseTableType, UUID uuid) {
+        try {
+            Statement statement = ChallengerPlugin.DATABASE_CONNECTION.createStatement();
+            statement.execute("DELETE FROM " + databaseTableType.getDatabaseTableName() + " WHERE uuid = '" + uuid + "'");
+            statement.close();
+            return insertDefault(databaseTableType, uuid);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return false;

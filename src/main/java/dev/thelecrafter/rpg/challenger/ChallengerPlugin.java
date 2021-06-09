@@ -3,13 +3,9 @@ package dev.thelecrafter.rpg.challenger;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.thelecrafter.rpg.challenger.util.ConfigFileManager;
-import dev.thelecrafter.rpg.challenger.util.sql.DatabaseTable;
-import dev.thelecrafter.rpg.challenger.util.sql.DatabaseTableType;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,7 +15,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.*;
 
-public final class ChallengerPlugin extends JavaPlugin implements Listener {
+public final class ChallengerPlugin extends JavaPlugin {
 
     public static Plugin INSTANCE = null;
     public static Connection DATABASE_CONNECTION = null;
@@ -29,7 +25,6 @@ public final class ChallengerPlugin extends JavaPlugin implements Listener {
         INSTANCE = getProvidingPlugin(this.getClass());
         initConfig();
         initDatabase();
-        Bukkit.getPluginManager().registerEvents(this, INSTANCE);
     }
 
     @Override
@@ -95,27 +90,10 @@ public final class ChallengerPlugin extends JavaPlugin implements Listener {
         // CREATE ALL TABLES
         try {
             Statement createZombieBossTable = DATABASE_CONNECTION.createStatement();
-            createZombieBossTable.execute("CREATE TABLE IF NOT EXISTS zombie_boss (uuid uuid NOT NULL, tier_one_kills int NOT NULL, tier_two_kills int NOT NULL, tier_three_kills int NOT NULL, tier_four_kills int NOT NULL, tier_five_kills int NOT NULL)");
+            createZombieBossTable.execute("CREATE TABLE IF NOT EXISTS zombie_boss (uuid VARCHAR(36) NOT NULL, tier_one_kills int NOT NULL, tier_two_kills int NOT NULL, tier_three_kills int NOT NULL, tier_four_kills int NOT NULL, tier_five_kills int NOT NULL)");
             createZombieBossTable.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        DatabaseTable.insertDefault(DatabaseTableType.ZOMBIE_BOSS, event.getPlayer().getUniqueId());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(INSTANCE, () -> {
-            DatabaseTable.add(DatabaseTableType.ZOMBIE_BOSS, event.getPlayer().getUniqueId(), "tier_one_kills", 2);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(INSTANCE, () -> {
-                try {
-                    Statement statement = DATABASE_CONNECTION.createStatement();
-                    statement.execute("DELETE FROM zombie_boss WHERE uuid = " + event.getPlayer().getUniqueId());
-                    statement.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
-            }, 20 * 20);
-        }, 3 * 20);
     }
 }
