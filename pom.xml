@@ -13,7 +13,7 @@
 
     <description>Challenge mighty enemies and gain powerful items!</description>
     <properties>
-        <java.version>1.11</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -75,6 +75,16 @@
             <groupId>dev.thelecrafter.libraries</groupId>
             <artifactId>klooned</artifactId>
             <version>1.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.25</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
         </dependency>
     </dependencies>
 </project>

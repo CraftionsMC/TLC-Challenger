@@ -4,3 +4,4 @@ main: dev.thelecrafter.rpg.challenger.ChallengerPlugin
 api-version: 1.16
 authors: [ TheLeCrafter ]
 description: Challenge mighty enemies and gain powerful items!
+database: true
