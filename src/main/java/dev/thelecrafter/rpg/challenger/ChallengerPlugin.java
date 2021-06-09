@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.thelecrafter.rpg.challenger.util.ConfigFileManager;
 
+import dev.thelecrafter.rpg.challenger.util.sql.DatabaseTableType;
+import dev.thelecrafter.rpg.challenger.util.sql.SqlListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -25,6 +27,8 @@ public final class ChallengerPlugin extends JavaPlugin {
         INSTANCE = getProvidingPlugin(this.getClass());
         initConfig();
         initDatabase();
+        initCommands();
+        initEvents();
     }
 
     @Override
@@ -88,12 +92,22 @@ public final class ChallengerPlugin extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(INSTANCE);
         }
         // CREATE ALL TABLES
-        try {
-            Statement createZombieBossTable = DATABASE_CONNECTION.createStatement();
-            createZombieBossTable.execute("CREATE TABLE IF NOT EXISTS zombie_boss (uuid VARCHAR(36) NOT NULL, tier_one_kills int NOT NULL, tier_two_kills int NOT NULL, tier_three_kills int NOT NULL, tier_four_kills int NOT NULL, tier_five_kills int NOT NULL)");
-            createZombieBossTable.close();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        for (DatabaseTableType type : DatabaseTableType.values()) {
+            try {
+                Statement statement = DATABASE_CONNECTION.createStatement();
+                statement.execute("CREATE TABLE IF NOT EXISTS " + type.getDatabaseTableName() +" (uuid VARCHAR(36) NOT NULL, tier_one_kills int NOT NULL, tier_two_kills int NOT NULL, tier_three_kills int NOT NULL, tier_four_kills int NOT NULL, tier_five_kills int NOT NULL)");
+                statement.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
+    }
+
+    private void initCommands() {
+
+    }
+
+    private void initEvents() {
+        Bukkit.getPluginManager().registerEvents(new SqlListeners(), INSTANCE);
     }
 }

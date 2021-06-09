@@ -16,7 +16,7 @@ public class SqlListeners implements Listener {
         try {
             for (DatabaseTableType type : DatabaseTableType.values()) {
                 Statement statement = ChallengerPlugin.DATABASE_CONNECTION.createStatement();
-                ResultSet result = statement.executeQuery("SELECT * FROM " + type.getDatabaseTableName() + " WHERE uuid = '" + event.getPlayer().getUniqueId() + "'");
+                ResultSet result = statement.executeQuery("UPDATE " + type.getDatabaseTableName() + " SELECT COUNT(*) FROM " + type.getDatabaseTableName() + " WHERE uuid = '" + event.getPlayer().getUniqueId() + "'");
                 if (result.getRow() == 0) {
                     DatabaseTable.insertDefault(type, event.getPlayer().getUniqueId());
                 }
